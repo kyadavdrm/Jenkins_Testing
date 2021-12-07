@@ -1,0 +1,15 @@
+---
+- name: Install the HTTPD packages on CentOs
+  hosts: all
+  become: yes
+  become_method: sudo
+  gather_facts: true
+  tasks:
+     - name: Install httpd
+       yum:
+          name: httpd
+          state: present
+     - name: Start the httpd service
+       service:
+          name: httpd
+          state: started

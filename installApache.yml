@@ -1,0 +1,48 @@
+---
+- name: Install the APACHE2 and HTTPD packages on Ubuntu and CentOs Servers
+  hosts: all
+  become: yes
+  become_method: sudo
+  gather_facts: true
+  tasks:
+   - name: Install APACHE2 on Ubuntu Server
+     block:
+     - name: Install Apache2
+       apt:
+          name: apache2
+          state: present
+     - name: Copy the file Source to Destination folder
+       copy:
+          src: files/ubuntu/index.html
+          dest: /var/www/html/
+       notify: Restart the apache2 service
+     - name: Start the apached2 service
+       service:
+           name: apache2
+           state: started
+     when: ansible_distribution=="Ubuntu"
+   - name: Install the HTTPD on CentOs
+     block:
+      - name: Install httpd
+        yum:
+           name: httpd
+           state: present
+      - name: copy files
+        copy:
+           src: files/centos/index.html
+           dest: /var/www/html/
+        notify: Restart the httpd service
+      - name: start httpd
+        service:
+           name: httpd
+           state: started
+     when: ansible_distribution=="CentOS"
+  handlers:
+     - name: Restart the apache2 service
+       service:
+          name: apache2
+          state: restarted
+     - name: Restart the httpd service
+       service:
+          name: httpd
+          state: restarted
